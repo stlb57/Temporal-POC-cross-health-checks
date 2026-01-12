@@ -33,7 +33,7 @@ func main() {
 	}
 	defer c.Close()
 
-	w := worker.New(c, "TWIN_TASK_QUEUE", worker.Options{})
+	w := worker.New(c, "TWIN_TASK_QUEUE_V3", worker.Options{})
 	w.RegisterWorkflow(MonitorTwinWorkflow)
 	w.RegisterActivity(CheckHealth)
 	w.RegisterActivity(RestartTwin)
@@ -43,13 +43,14 @@ func main() {
 	}()
 
 	peerURL := fmt.Sprintf("http://localhost:%d/health", *port2)
-	workflowID := "monitor-" + *twinID
+	// Changing ID to v3 to avoid history mismatch with previous version (which didn't have Sleep)
+	workflowID := "monitor-v3-" + *twinID
 
 	_, err = c.ExecuteWorkflow(
 		context.Background(),
 		client.StartWorkflowOptions{
 			ID:        workflowID,
-			TaskQueue: "TWIN_TASK_QUEUE",
+			TaskQueue: "TWIN_TASK_QUEUE_V3",
 		},
 		MonitorTwinWorkflow,
 		peerURL,
