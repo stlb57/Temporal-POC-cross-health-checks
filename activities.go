@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"os"
 	"os/exec"
 	"time"
 )
@@ -33,16 +34,15 @@ func RestartTwin(ctx context.Context, selfID string, port2 int) error {
 		peer = 8002
 	}
 
-	cmd := exec.Command(
-		"bash",
-		"-c",
-		fmt.Sprintf(
-			"go run main.go --twin=%s --port1=%d --port2=%d &",
-			twin,
-			port1,
-			peer,
-		),
-	)
+	args := []string{
+		fmt.Sprintf("-twin=%s", twin),
+		fmt.Sprintf("-port1=%d", port1),
+		fmt.Sprintf("-port2=%d", peer),
+	}
+
+	cmd := exec.Command("./twin.exe", args...)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
 
 	return cmd.Start()
 }

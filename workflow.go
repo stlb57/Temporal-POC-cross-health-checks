@@ -21,6 +21,8 @@ func MonitorTwinWorkflow(
 		},
 	}
 	ctx = workflow.WithActivityOptions(ctx, ao)
+	
+	workflow.Sleep(ctx, time.Second*30)
 
 	for {
 		var healthy bool
